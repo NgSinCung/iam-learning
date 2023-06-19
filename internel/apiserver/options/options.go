@@ -5,7 +5,7 @@
 package options
 
 import (
-	genericoptions "GoPracticalDevelopmentDemo/internel/pkg/options"
+	genericoptions "github/NgSingCung/iam-learning/internel/pkg/options"
 )
 
 type Options struct {

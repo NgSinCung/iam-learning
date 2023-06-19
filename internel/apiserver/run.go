@@ -5,8 +5,8 @@
 package apiserver
 
 import (
-	"GoPracticalDevelopmentDemo/internel/apiserver/config"
 	"fmt"
+	"github/NgSingCung/iam-learning/internel/apiserver/config"
 )
 
 func Run(cfg *config.Config) error {

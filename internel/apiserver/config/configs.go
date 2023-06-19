@@ -4,7 +4,7 @@
 
 package config
 
-import "GoPracticalDevelopmentDemo/internel/apiserver/options"
+import "github/NgSingCung/iam-learning/internel/apiserver/options"
 
 // Config is the running api server config structure
 type Config struct {

@@ -5,8 +5,8 @@
 package apiserver
 
 import (
-	"GoPracticalDevelopmentDemo/internel/apiserver/config"
-	genericapiserver "GoPracticalDevelopmentDemo/internel/pkg/server"
+	"github/NgSingCung/iam-learning/internel/apiserver/config"
+	genericapiserver "github/NgSingCung/iam-learning/internel/pkg/server"
 )
 
 type apiServer struct {

@@ -4,7 +4,7 @@
 
 package options
 
-import "GoPracticalDevelopmentDemo/internel/pkg/server"
+import "github/NgSingCung/iam-learning/internel/pkg/server"
 
 type ServerRunOptions struct {
 	Mode string `json:"mode"`

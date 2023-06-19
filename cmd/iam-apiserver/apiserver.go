@@ -5,7 +5,7 @@
 package main
 
 import (
-	"GoPracticalDevelopmentDemo/internel/apiserver"
+	"github/NgSingCung/iam-learning/internel/apiserver"
 	"math/rand"
 	"time"
 

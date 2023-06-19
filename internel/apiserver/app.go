@@ -5,9 +5,9 @@
 package apiserver
 
 import (
-	"GoPracticalDevelopmentDemo/internel/apiserver/config"
-	"GoPracticalDevelopmentDemo/internel/apiserver/options"
-	"GoPracticalDevelopmentDemo/pkg/app"
+	"github/NgSingCung/iam-learning/internel/apiserver/config"
+	"github/NgSingCung/iam-learning/internel/apiserver/options"
+	"github/NgSingCung/iam-learning/pkg/app"
 )
 
 func NewApp(basename string) *app.App {
