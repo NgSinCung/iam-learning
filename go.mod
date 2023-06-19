@@ -1,4 +1,4 @@
-module GoPracticalDevelopmentDemo
+module github/NgSingCung/iam-learning
 
 go 1.18
 
