@@ -5,6 +5,7 @@
 package options
 
 import (
+	cliflag "github.com/marmotedu/component-base/pkg/cli/flag"
 	genericoptions "github/ngsin/iam-learning/internel/pkg/options"
 )
 
@@ -18,4 +19,8 @@ func NewOptions() *Options {
 		GenericServerRunOptions: genericoptions.NewServerRunOptions(),
 		SecureServing:           genericoptions.NewSecureServingOptions(),
 	}
+}
+
+func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
+	return fss
 }
