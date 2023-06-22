@@ -11,8 +11,14 @@ import (
 	"github.com/marmotedu/component-base/pkg/cli/globalflag"
 	"github.com/marmotedu/component-base/pkg/term"
 	"github.com/marmotedu/component-base/pkg/version/verflag"
+	"github.com/marmotedu/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"os"
+)
+
+var (
+	progressMessage = color.GreenString("==>")
 )
 
 // App is the main structure of a cli application.
@@ -26,8 +32,9 @@ type App struct {
 	args        cobra.PositionalArgs // args is a func type to be used for validating positional arguments.
 	commands    []*Command           // commands is the subcommands that are part of this application.
 	cmd         *cobra.Command       // cmd is the cobra command which use runFunc as RunE.
-	noVersion   bool                 // noVersion is used to determine whether to display version information.
-	noConfig    bool                 // noConfig is used to determine whether to read configuration information.
+	noVersion   bool                 // noVersion whether to display version information.
+	noConfig    bool                 // noConfig whether to read configuration information.
+	silence     bool                 // silence whether to print the flag usage and progress message.
 }
 
 type RunFunc func(basename string) error
@@ -49,6 +56,30 @@ type Option func(*App)
 func WithOptions(opt CliOptions) Option {
 	return func(a *App) {
 		a.options = opt
+	}
+}
+
+// WithSilence sets the application to silent mode, in which the program startup
+// information, configuration information, and version information are not
+// printed in the console.
+func WithSilence() Option {
+	return func(a *App) {
+		a.silence = true
+	}
+}
+
+// WithDefaultValidArgs set default validation function to valid non-flag arguments.
+func WithDefaultValidArgs() Option {
+	return func(a *App) {
+		a.args = func(cmd *cobra.Command, args []string) error {
+			for _, arg := range args {
+				if len(arg) > 0 {
+					return fmt.Errorf("%q does not take any arguments, got %q", cmd.CommandPath(), args)
+				}
+			}
+
+			return nil
+		}
 	}
 }
 
@@ -76,6 +107,7 @@ func (a *App) Run() {
 	}
 }
 
+// buildCommand is used to build the cobra command.
 func (a *App) buildCommand() {
 	// create the root command
 	cmd := cobra.Command{
@@ -143,18 +175,51 @@ func (a *App) buildCommand() {
 	a.cmd = &cmd
 }
 
+// runCommand does some initialization work and then calls the runFunc.
 func (a *App) runCommand(cmd *cobra.Command, args []string) error {
-	//todo: init job before run runFunc
-	fmt.Println("init job before run runFunc")
-
 	// if pass --version flag, print version information and exit
 	if !a.noVersion {
 		verflag.PrintAndExitIfRequested()
 	}
 
+	if !a.noConfig {
+		// viper bind config from flag
+		if err := viper.BindPFlags(cmd.Flags()); err != nil {
+			return err
+		}
+		// viper bind config from options
+		if err := viper.Unmarshal(a.options); err != nil {
+			return err
+		}
+	}
+
+	if a.options != nil {
+		if err := a.applyOptionRules(); err != nil {
+			return err
+		}
+	}
+
 	// run application
 	if a.runFunc != nil {
 		return a.runFunc(a.basename)
+	}
+	return nil
+}
+
+func (a *App) applyOptionRules() error {
+	if completableOptions, ok := a.options.(CompleteableOptions); ok {
+		if err := completableOptions.Complete(); err != nil {
+			return err
+		}
+	}
+
+	if errs := a.options.Validate(); len(errs) != 0 {
+		return errors.NewAggregate(errs)
+	}
+
+	//TODO: fmt to log
+	if printableOptions, ok := a.options.(PrintableOptions); ok && !a.silence {
+		fmt.Printf("%v Config: `%s`", progressMessage, printableOptions.String())
 	}
 	return nil
 }
