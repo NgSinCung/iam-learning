@@ -49,7 +49,7 @@ func addConfigFlag(basename string, fs *pflag.FlagSet) {
 				viper.AddConfigPath(filepath.Join("/etc", names[0]))
 			}
 
-			viper.SetConfigFile(basename)
+			viper.SetConfigName(basename)
 		}
 
 		// read config file
