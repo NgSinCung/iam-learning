@@ -181,13 +181,12 @@ func (a *App) runCommand(cmd *cobra.Command, args []string) error {
 	if !a.noVersion {
 		verflag.PrintAndExitIfRequested()
 	}
-
 	if !a.noConfig {
-		// viper bind config from flag
+		// update cmd flags to viper
 		if err := viper.BindPFlags(cmd.Flags()); err != nil {
 			return err
 		}
-		// viper bind config from options
+		// update viper config to options struct
 		if err := viper.Unmarshal(a.options); err != nil {
 			return err
 		}
@@ -207,7 +206,7 @@ func (a *App) runCommand(cmd *cobra.Command, args []string) error {
 }
 
 func (a *App) applyOptionRules() error {
-	if completableOptions, ok := a.options.(CompleteableOptions); ok {
+	if completableOptions, ok := a.options.(CompletableOptions); ok {
 		if err := completableOptions.Complete(); err != nil {
 			return err
 		}

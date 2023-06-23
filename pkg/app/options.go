@@ -11,8 +11,8 @@ type CliOptions interface {
 	Validate() []error
 }
 
-// CompleteableOptions abstracts options which can be completed.
-type CompleteableOptions interface {
+// CompletableOptions abstracts options which can be completed.
+type CompletableOptions interface {
 	Complete() error
 }
 
