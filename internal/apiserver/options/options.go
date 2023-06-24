@@ -5,7 +5,7 @@
 package options
 
 import (
-	genericoptions "github/ngsin/iam-learning/internal/pkg/options"
+	genericoptions "github.com/ngsin/iam-learning/internal/pkg/options"
 )
 
 type Options struct {

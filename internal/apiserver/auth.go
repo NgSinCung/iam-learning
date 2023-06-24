@@ -3,9 +3,9 @@ package apiserver
 import (
 	"context"
 	metav1 "github.com/marmotedu/component-base/pkg/meta/v1"
-	"github/ngsin/iam-learning/internal/apiserver/store"
-	"github/ngsin/iam-learning/internal/pkg/middleware"
-	"github/ngsin/iam-learning/internal/pkg/middleware/auth"
+	"github.com/ngsin/iam-learning/internal/apiserver/store"
+	"github.com/ngsin/iam-learning/internal/pkg/middleware"
+	"github.com/ngsin/iam-learning/internal/pkg/middleware/auth"
 	"time"
 )
 

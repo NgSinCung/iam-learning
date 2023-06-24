@@ -5,7 +5,7 @@
 package apiserver
 
 import (
-	"github/ngsin/iam-learning/internal/apiserver/config"
+	"github.com/ngsin/iam-learning/internal/apiserver/config"
 )
 
 // Run runs the specified APIServer.

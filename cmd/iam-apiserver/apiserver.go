@@ -5,7 +5,7 @@
 package main
 
 import (
-	"github/ngsin/iam-learning/internal/apiserver"
+	"github.com/ngsin/iam-learning/internal/apiserver"
 	"math/rand"
 	"time"
 

@@ -4,7 +4,7 @@
 
 package config
 
-import "github/ngsin/iam-learning/internal/apiserver/options"
+import "github.com/ngsin/iam-learning/internal/apiserver/options"
 
 // Config is the running api server config structure
 // just a layer of wrapping around the Option struct.

@@ -6,7 +6,7 @@ import (
 	"github.com/marmotedu/component-base/pkg/core"
 	"github.com/marmotedu/errors"
 	code "github.com/marmotedu/sample-code"
-	"github/ngsin/iam-learning/internal/pkg/middleware"
+	"github.com/ngsin/iam-learning/internal/pkg/middleware"
 	"strings"
 )
 

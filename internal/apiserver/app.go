@@ -5,9 +5,9 @@
 package apiserver
 
 import (
-	"github/ngsin/iam-learning/internal/apiserver/config"
-	"github/ngsin/iam-learning/internal/apiserver/options"
-	"github/ngsin/iam-learning/pkg/app"
+	"github.com/ngsin/iam-learning/internal/apiserver/config"
+	"github.com/ngsin/iam-learning/internal/apiserver/options"
+	"github.com/ngsin/iam-learning/pkg/app"
 )
 
 const commandDesc = `The IAM API server validates and configures data

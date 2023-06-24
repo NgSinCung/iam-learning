@@ -5,8 +5,8 @@
 package apiserver
 
 import (
-	"github/ngsin/iam-learning/internal/apiserver/config"
-	genericapiserver "github/ngsin/iam-learning/internal/pkg/apiserver"
+	"github.com/ngsin/iam-learning/internal/apiserver/config"
+	genericapiserver "github.com/ngsin/iam-learning/internal/pkg/apiserver"
 )
 
 type Server struct {

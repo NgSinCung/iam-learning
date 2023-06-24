@@ -6,7 +6,7 @@ package apiserver
 
 import (
 	"github.com/gin-gonic/gin"
-	"github/ngsin/iam-learning/internal/pkg/middleware/auth"
+	"github.com/ngsin/iam-learning/internal/pkg/middleware/auth"
 )
 
 func initRouter(g *gin.Engine) {
