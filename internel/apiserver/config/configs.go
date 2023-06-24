@@ -7,6 +7,7 @@ package config
 import "github/ngsin/iam-learning/internel/apiserver/options"
 
 // Config is the running api server config structure
+// just a layer of wrapping around the Option struct.
 type Config struct {
 	*options.Options
 }

@@ -5,13 +5,12 @@
 package apiserver
 
 import (
-	"fmt"
 	"github/ngsin/iam-learning/internel/apiserver/config"
 )
 
-func Run(cfg *config.Config) error {
-	fmt.Println("run apiserver")
-	server, err := createAPIServer(cfg)
+// Run runs the specified APIServer.
+func Run(genericConfig *config.Config) error {
+	server, err := createServer(genericConfig)
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,11 @@
 
 package options
 
+import (
+	"github.com/spf13/pflag"
+	"github/ngsin/iam-learning/internel/pkg/apiserver"
+)
+
 // SecureServingOptions contains configuration items related to HTTPS server startup.
 type SecureServingOptions struct {
 	BindAddress string `json:"bind-address" mapstructure:"bind-address"`
@@ -49,4 +54,52 @@ type CertKey struct {
 	CertFile string `json:"cert-file"        mapstructure:"cert-file"`
 	// KeyFile is a file containing a PEM-encoded private key for the certificate specified by CertFile
 	KeyFile string `json:"private-key-file" mapstructure:"private-key-file"`
+}
+
+// ApplyTo applies the run options to the method receiver and returns self.
+func (s *SecureServingOptions) ApplyTo(c *apiserver.Config) error {
+	// SecureServing is required to serve https
+	c.SecureServing = &apiserver.SecureServingInfo{
+		BindAddress: s.BindAddress,
+		BindPort:    s.BindPort,
+		CertKey: apiserver.CertKey{
+			CertFile: s.ServerCert.CertKey.CertFile,
+			KeyFile:  s.ServerCert.CertKey.KeyFile,
+		},
+	}
+
+	return nil
+}
+
+// AddFlags adds flags related to HTTPS server for a specific APIServer to the
+// specified FlagSet.
+func (s *SecureServingOptions) AddFlags(fs *pflag.FlagSet) {
+	fs.StringVar(&s.BindAddress, "secure.bind-address", s.BindAddress, ""+
+		"The IP address on which to listen for the --secure.bind-port port. The "+
+		"associated interface(s) must be reachable by the rest of the engine, and by CLI/web "+
+		"clients. If blank, all interfaces will be used (0.0.0.0 for all IPv4 interfaces and :: for all IPv6 interfaces).")
+	desc := "The port on which to serve HTTPS with authentication and authorization."
+	if s.Required {
+		desc += " It cannot be switched off with 0."
+	} else {
+		desc += " If 0, don't serve HTTPS at all."
+	}
+	fs.IntVar(&s.BindPort, "secure.bind-port", s.BindPort, desc)
+
+	fs.StringVar(&s.ServerCert.CertDirectory, "secure.tls.cert-dir", s.ServerCert.CertDirectory, ""+
+		"The directory where the TLS certs are located. "+
+		"If --secure.tls.cert-key.cert-file and --secure.tls.cert-key.private-key-file are provided, "+
+		"this flag will be ignored.")
+
+	fs.StringVar(&s.ServerCert.PairName, "secure.tls.pair-name", s.ServerCert.PairName, ""+
+		"The name which will be used with --secure.tls.cert-dir to make a cert and key filenames. "+
+		"It becomes <cert-dir>/<pair-name>.crt and <cert-dir>/<pair-name>.key")
+
+	fs.StringVar(&s.ServerCert.CertKey.CertFile, "secure.tls.cert-key.cert-file", s.ServerCert.CertKey.CertFile, ""+
+		"File containing the default x509 Certificate for HTTPS. (CA cert, if any, concatenated "+
+		"after server cert).")
+
+	fs.StringVar(&s.ServerCert.CertKey.KeyFile, "secure.tls.cert-key.private-key-file",
+		s.ServerCert.CertKey.KeyFile, ""+
+			"File containing the default x509 private key matching --secure.tls.cert-key.cert-file.")
 }

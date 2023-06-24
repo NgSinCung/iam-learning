@@ -5,22 +5,19 @@
 package options
 
 import (
-	cliflag "github.com/marmotedu/component-base/pkg/cli/flag"
 	genericoptions "github/ngsin/iam-learning/internel/pkg/options"
 )
 
 type Options struct {
 	GenericServerRunOptions *genericoptions.ServerRunOptions
-	SecureServing           *genericoptions.SecureServingOptions
+	InsecureServingOptions  *genericoptions.InsecureServingOptions `json:"insecure" mapstructure:"insecure"`
+	SecureServingOptions    *genericoptions.SecureServingOptions   `json:"secure"   mapstructure:"secure"`
 }
 
 func NewOptions() *Options {
 	return &Options{
 		GenericServerRunOptions: genericoptions.NewServerRunOptions(),
-		SecureServing:           genericoptions.NewSecureServingOptions(),
+		SecureServingOptions:    genericoptions.NewSecureServingOptions(),
+		InsecureServingOptions:  genericoptions.NewInsecureServingOptions(),
 	}
-}
-
-func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
-	return fss
 }
