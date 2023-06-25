@@ -5,7 +5,10 @@
 package apiserver
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/ngsin/iam-learning/internal/apiserver/store"
+	"github.com/ngsin/iam-learning/internal/apiserver/store/mysql"
 	"github.com/ngsin/iam-learning/internal/pkg/middleware/auth"
 )
 
@@ -20,6 +23,9 @@ func installMiddleware(g *gin.Engine) {
 func installController(g *gin.Engine) *gin.Engine {
 	basicStrategy := newBasicAuth().(auth.BasicStrategy)
 	g.POST("/login", basicStrategy.AuthFunc())
-
+	store.Client()
+	storeIns, _ := mysql.GetMySQLFactoryOr(nil)
+	fmt.Printf("\nstoreIns: %v\n", storeIns)
+	//TODO: define controller
 	return g
 }

@@ -6,11 +6,15 @@ package apiserver
 
 import (
 	"github.com/ngsin/iam-learning/internal/apiserver/config"
-	genericapiserver "github.com/ngsin/iam-learning/internal/pkg/apiserver"
+	"github.com/ngsin/iam-learning/internal/apiserver/store"
+	"github.com/ngsin/iam-learning/internal/apiserver/store/mysql"
+	"github.com/ngsin/iam-learning/internal/pkg/api/rest"
+	genericoptions "github.com/ngsin/iam-learning/internal/pkg/options"
 )
 
 type Server struct {
-	genericAPIServer *genericapiserver.GenericAPIServer
+	genericRESTServer *rest.GenericAPIServer
+	extraConfig       *ExtraConfig
 }
 
 type PreparedServer struct {
@@ -18,45 +22,79 @@ type PreparedServer struct {
 }
 
 func (s *PreparedServer) Run() error {
-	return s.genericAPIServer.Run()
+	return s.genericRESTServer.Run()
 }
 
 func (s *Server) PrepareRun() *PreparedServer {
-	initRouter(s.genericAPIServer.Engine)
+	storeIns, _ := mysql.GetMySQLFactoryOr(s.extraConfig.mysqlOptions)
+	// storeIns, _ := etcd.GetEtcdFactoryOr(c.etcdOptions, nil)
+	store.SetClient(storeIns)
+
+	initRouter(s.genericRESTServer.Engine)
 
 	return &PreparedServer{s}
 
 }
 
 func createServer(genericConfig *config.Config) (*Server, error) {
-	genericServerConfig, err := buildGenericServerConfig(genericConfig)
+	genericRESTServerConfig, err := buildGenericRESTServerConfig(genericConfig)
 	if err != nil {
 		return nil, err
 	}
-	completableConfig := genericServerConfig.Complete()
-	genericServer := genericapiserver.New(&completableConfig)
+
+	extraConfig, _ := buildExtraConfig(genericConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	genericServer := genericRESTServerConfig.Complete().NewServer()
+
+	extraConfig.complete()
 
 	server := &Server{
-		genericAPIServer: genericServer,
+		genericRESTServer: genericServer,
+		extraConfig:       extraConfig,
 		// TODO: add other server here. ex. grpc server
 	}
 	return server, nil
 }
 
-func buildGenericServerConfig(genericConfig *config.Config) (genericServerConfig *genericapiserver.Config, lastErr error) {
+func buildGenericRESTServerConfig(genericConfig *config.Config) (genericRESTServerConfig *rest.Config, lastErr error) {
 	// generate api server default required config
-	genericServerConfig = genericapiserver.NewConfig()
+	genericRESTServerConfig = rest.NewConfig()
 
-	if lastErr = genericConfig.GenericServerRunOptions.ApplyTo(genericServerConfig); lastErr != nil {
+	if lastErr = genericConfig.GenericServerRunOptions.ApplyTo(genericRESTServerConfig); lastErr != nil {
 		return
 	}
 
-	if lastErr = genericConfig.SecureServingOptions.ApplyTo(genericServerConfig); lastErr != nil {
+	if lastErr = genericConfig.SecureServingOptions.ApplyTo(genericRESTServerConfig); lastErr != nil {
 		return
 	}
 
-	if lastErr = genericConfig.InsecureServingOptions.ApplyTo(genericServerConfig); lastErr != nil {
+	if lastErr = genericConfig.InsecureServingOptions.ApplyTo(genericRESTServerConfig); lastErr != nil {
 		return
 	}
 	return
+}
+
+// ExtraConfig defines extra configuration for the iam-apiserver.
+type ExtraConfig struct {
+	Addr         string
+	MaxMsgSize   int
+	ServerCert   genericoptions.GeneratableKeyCert
+	mysqlOptions *genericoptions.MySQLOptions
+	// etcdOptions      *genericoptions.EtcdOptions
+}
+
+func buildExtraConfig(cfg *config.Config) (*ExtraConfig, error) {
+	return &ExtraConfig{
+		mysqlOptions: cfg.MySQLOptions,
+	}, nil
+}
+
+// Complete fills in any fields not set that are required to have valid data and can be derived from other fields.
+func (c *ExtraConfig) complete() {
+	if c.Addr == "" {
+		c.Addr = "127.0.0.1:8081"
+	}
 }
