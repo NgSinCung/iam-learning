@@ -6,8 +6,6 @@ package apiserver
 
 import (
 	"github.com/gin-gonic/gin"
-	"net"
-	"strconv"
 )
 
 // Config is a structure used to configure a GenericAPIServer.
@@ -35,28 +33,4 @@ func (c *Config) Complete() CompletedConfig {
 // CompletedConfig is the completed configuration for GenericAPIServer.
 type CompletedConfig struct {
 	*Config
-}
-
-// SecureServingInfo holds configuration of the TLS server.
-type SecureServingInfo struct {
-	BindAddress string
-	BindPort    int
-	CertKey     CertKey
-}
-
-type CertKey struct {
-	// CertFile is a file containing a PEM-encoded certificate, and possibly the complete certificate chain
-	CertFile string
-	// KeyFile is a file containing a PEM-encoded private key for the certificate specified by CertFile
-	KeyFile string
-}
-
-// Address join host IP address and host port number into a address string, like: 0.0.0.0:8443.
-func (s *SecureServingInfo) Address() string {
-	return net.JoinHostPort(s.BindAddress, strconv.Itoa(s.BindPort))
-}
-
-// InsecureServingInfo holds configuration of the insecure http server.
-type InsecureServingInfo struct {
-	Address string
 }
