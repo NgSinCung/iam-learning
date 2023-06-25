@@ -33,7 +33,9 @@ func createServer(genericConfig *config.Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	genericServer := genericServerConfig.Complete().NewServer()
+	completableConfig := genericServerConfig.Complete()
+	genericServer := genericapiserver.New(&completableConfig)
+
 	server := &Server{
 		genericAPIServer: genericServer,
 		// TODO: add other server here. ex. grpc server

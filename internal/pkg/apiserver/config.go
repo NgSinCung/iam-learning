@@ -37,18 +37,6 @@ type CompletedConfig struct {
 	*Config
 }
 
-// NewServer return a GenericAPIServer
-func (c CompletedConfig) NewServer() *GenericAPIServer {
-	gin.SetMode(c.Mode)
-	s := &GenericAPIServer{
-		Engine:              gin.New(),
-		SecureServingInfo:   c.SecureServing,
-		InsecureServingInfo: c.InsecureServing,
-	}
-	initGenericAPIServer(s)
-	return s
-}
-
 // SecureServingInfo holds configuration of the TLS server.
 type SecureServingInfo struct {
 	BindAddress string
