@@ -12,6 +12,7 @@ type Options struct {
 	GenericServerRunOptions *genericoptions.ServerRunOptions
 	InsecureServingOptions  *genericoptions.InsecureServingOptions `json:"insecure" mapstructure:"insecure"`
 	SecureServingOptions    *genericoptions.SecureServingOptions   `json:"secure"   mapstructure:"secure"`
+	MySQLOptions            *genericoptions.MySQLOptions           `json:"mysql"    mapstructure:"mysql"`
 }
 
 func NewOptions() *Options {
@@ -19,5 +20,6 @@ func NewOptions() *Options {
 		GenericServerRunOptions: genericoptions.NewServerRunOptions(),
 		SecureServingOptions:    genericoptions.NewSecureServingOptions(),
 		InsecureServingOptions:  genericoptions.NewInsecureServingOptions(),
+		MySQLOptions:            genericoptions.NewMySQLOptions(),
 	}
 }
