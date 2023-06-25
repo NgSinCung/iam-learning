@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package apiserver
+package rest
 
 import (
 	"github.com/gin-gonic/gin"
@@ -33,4 +33,16 @@ func (c *Config) Complete() CompletedConfig {
 // CompletedConfig is the completed configuration for GenericAPIServer.
 type CompletedConfig struct {
 	*Config
+}
+
+// NewServer return a GenericAPIServer
+func (c CompletedConfig) NewServer() *GenericAPIServer {
+	gin.SetMode(c.Mode)
+	s := &GenericAPIServer{
+		Engine:              gin.New(),
+		SecureServingInfo:   c.SecureServing,
+		InsecureServingInfo: c.InsecureServing,
+	}
+	initGenericAPIServer(s)
+	return s
 }

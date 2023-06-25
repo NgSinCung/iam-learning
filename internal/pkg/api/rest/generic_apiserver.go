@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package apiserver
+package rest
 
 import (
 	"errors"
@@ -19,18 +19,6 @@ type GenericAPIServer struct {
 	SecureServingInfo            *SecureServingInfo
 	InsecureServingInfo          *InsecureServingInfo
 	insecureServer, secureServer *http.Server
-}
-
-// New return a GenericAPIServer
-func New(c *CompletedConfig) *GenericAPIServer {
-	gin.SetMode(c.Mode)
-	s := &GenericAPIServer{
-		Engine:              gin.New(),
-		SecureServingInfo:   c.SecureServing,
-		InsecureServingInfo: c.InsecureServing,
-	}
-	initGenericAPIServer(s)
-	return s
 }
 
 func (s *GenericAPIServer) Setup() {
