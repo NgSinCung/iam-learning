@@ -5,7 +5,7 @@
 package options
 
 import (
-	"github.com/ngsin/iam-learning/internal/pkg/apiserver"
+	rest "github.com/ngsin/iam-learning/internal/pkg/api/rest"
 	"github.com/spf13/pflag"
 )
 
@@ -57,12 +57,12 @@ type CertKey struct {
 }
 
 // ApplyTo applies the run options to the method receiver and returns self.
-func (s *SecureServingOptions) ApplyTo(c *apiserver.Config) error {
+func (s *SecureServingOptions) ApplyTo(c *rest.Config) error {
 	// SecureServing is required to serve https
-	c.SecureServing = &apiserver.SecureServingInfo{
+	c.SecureServing = &rest.SecureServingInfo{
 		BindAddress: s.BindAddress,
 		BindPort:    s.BindPort,
-		CertKey: apiserver.CertKey{
+		CertKey: rest.CertKey{
 			CertFile: s.ServerCert.CertKey.CertFile,
 			KeyFile:  s.ServerCert.CertKey.KeyFile,
 		},

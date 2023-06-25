@@ -5,7 +5,7 @@
 package options
 
 import (
-	"github.com/ngsin/iam-learning/internal/pkg/apiserver"
+	"github.com/ngsin/iam-learning/internal/pkg/api/rest"
 	"github.com/spf13/pflag"
 	"net"
 	"strconv"
@@ -19,8 +19,8 @@ type InsecureServingOptions struct {
 }
 
 // ApplyTo applies the run options to the method receiver and returns self.
-func (s *InsecureServingOptions) ApplyTo(c *apiserver.Config) error {
-	c.InsecureServing = &apiserver.InsecureServingInfo{
+func (s *InsecureServingOptions) ApplyTo(c *rest.Config) error {
+	c.InsecureServing = &rest.InsecureServingInfo{
 		Address: net.JoinHostPort(s.BindAddress, strconv.Itoa(s.BindPort)),
 	}
 

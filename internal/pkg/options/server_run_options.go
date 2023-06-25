@@ -5,7 +5,7 @@
 package options
 
 import (
-	"github.com/ngsin/iam-learning/internal/pkg/apiserver"
+	"github.com/ngsin/iam-learning/internal/pkg/api/rest"
 	"github.com/spf13/pflag"
 )
 
@@ -14,13 +14,13 @@ type ServerRunOptions struct {
 }
 
 func NewServerRunOptions() *ServerRunOptions {
-	defaults := apiserver.NewConfig()
+	defaults := rest.NewConfig()
 	return &ServerRunOptions{
 		Mode: defaults.Mode,
 	}
 }
 
-func (s *ServerRunOptions) ApplyTo(c *apiserver.Config) error {
+func (s *ServerRunOptions) ApplyTo(c *rest.Config) error {
 	c.Mode = s.Mode
 	return nil
 }
