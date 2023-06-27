@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"fmt"
+	v1 "github.com/marmotedu/api/apiserver/v1"
 	"github.com/marmotedu/errors"
 	"github.com/ngsin/iam-learning/internal/apiserver/store"
 	genericoptions "github.com/ngsin/iam-learning/internal/pkg/options"
@@ -68,7 +69,7 @@ func GetMySQLFactoryOr(opts *genericoptions.MySQLOptions) (store.Factory, error)
 
 		// uncomment the following line if you need auto migration the given models
 		// not suggested in production environment.
-		// migrateDatabase(dbIns)
+		migrateDatabase(dbIns)
 
 		mysqlFactory = &datastore{dbIns}
 	})
@@ -78,4 +79,21 @@ func GetMySQLFactoryOr(opts *genericoptions.MySQLOptions) (store.Factory, error)
 	}
 
 	return mysqlFactory, nil
+}
+
+// migrateDatabase run auto migration for given models, will only add missing fields,
+// won't delete/change current data.
+// nolint:unused // may be reused in the feature, or just show a migrate usage.
+func migrateDatabase(db *gorm.DB) error {
+	if err := db.AutoMigrate(&v1.User{}); err != nil {
+		return errors.Wrap(err, "migrate user model failed")
+	}
+	if err := db.AutoMigrate(&v1.Policy{}); err != nil {
+		return errors.Wrap(err, "migrate policy model failed")
+	}
+	if err := db.AutoMigrate(&v1.Secret{}); err != nil {
+		return errors.Wrap(err, "migrate secret model failed")
+	}
+
+	return nil
 }

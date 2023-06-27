@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/marmotedu/component-base/pkg/core"
 	"github.com/marmotedu/errors"
-	code "github.com/marmotedu/sample-code"
+	"github.com/ngsin/iam-learning/internal/pkg/code"
 	"github.com/ngsin/iam-learning/internal/pkg/middleware"
 	"strings"
 )

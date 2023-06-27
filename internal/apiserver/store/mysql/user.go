@@ -6,7 +6,7 @@ import (
 	"github.com/marmotedu/component-base/pkg/fields"
 	metav1 "github.com/marmotedu/component-base/pkg/meta/v1"
 	"github.com/marmotedu/errors"
-	code "github.com/marmotedu/sample-code"
+	"github.com/ngsin/iam-learning/internal/pkg/code"
 	"github.com/ngsin/iam-learning/internal/pkg/util/gormutil"
 	"gorm.io/gorm"
 )
