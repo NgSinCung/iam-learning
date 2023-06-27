@@ -12,6 +12,7 @@ import (
 	"github.com/marmotedu/component-base/pkg/term"
 	"github.com/marmotedu/component-base/pkg/version/verflag"
 	"github.com/marmotedu/errors"
+	"github.com/marmotedu/iam/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
@@ -216,9 +217,8 @@ func (a *App) applyOptionRules() error {
 		return errors.NewAggregate(errs)
 	}
 
-	//TODO: fmt to log
 	if printableOptions, ok := a.options.(PrintableOptions); ok && !a.silence {
-		fmt.Printf("%v Config: `%s`", progressMessage, printableOptions.String())
+		log.Infof("%v Config: `%s`", progressMessage, printableOptions.String())
 	}
 	return nil
 }

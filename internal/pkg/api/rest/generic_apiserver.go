@@ -6,8 +6,8 @@ package rest
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/marmotedu/iam/pkg/log"
 	"golang.org/x/sync/errgroup"
 	"net/http"
 )
@@ -69,15 +69,15 @@ func (s *GenericAPIServer) Run() error {
 	// it won't block the graceful shutdown handling below
 	eg.Go(func() error {
 		// TODO: fmt to log
-		fmt.Printf("Start to listening the incoming requests on http address: %s", s.InsecureServingInfo.Address)
+		log.Infof("Start to listening the incoming requests on http address: %s", s.InsecureServingInfo.Address)
 
 		if err := s.insecureServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fmt.Printf(err.Error())
+			log.Fatal(err.Error())
 
 			return err
 		}
 
-		fmt.Printf("Server on %s stopped", s.InsecureServingInfo.Address)
+		log.Infof("Server on %s stopped", s.InsecureServingInfo.Address)
 
 		return nil
 	})
@@ -85,8 +85,7 @@ func (s *GenericAPIServer) Run() error {
 	//TODO: health check
 
 	if err := eg.Wait(); err != nil {
-		// TODO: fmt to log
-		fmt.Printf(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	return nil
