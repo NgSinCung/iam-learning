@@ -5,6 +5,7 @@
 package apiserver
 
 import (
+	"github.com/marmotedu/iam/pkg/log"
 	"github.com/ngsin/iam-learning/internal/apiserver/config"
 	"github.com/ngsin/iam-learning/internal/apiserver/options"
 	"github.com/ngsin/iam-learning/pkg/app"
@@ -32,8 +33,8 @@ func NewApp(basename string) *app.App {
 // run return a func which is used as the RunFunc of app.App.
 func run(opts *options.Options) app.RunFunc {
 	return func(basename string) error {
-		//TODO: log something
-		//TODO: init config
+		log.Init(opts.Log)
+		defer log.Flush()
 		genericConfig, err := config.CreateConfigFromOptions(opts)
 		if err != nil {
 			return err
