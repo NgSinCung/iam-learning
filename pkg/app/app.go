@@ -10,6 +10,7 @@ import (
 	cliflag "github.com/marmotedu/component-base/pkg/cli/flag"
 	"github.com/marmotedu/component-base/pkg/cli/globalflag"
 	"github.com/marmotedu/component-base/pkg/term"
+	"github.com/marmotedu/component-base/pkg/version"
 	"github.com/marmotedu/component-base/pkg/version/verflag"
 	"github.com/marmotedu/errors"
 	"github.com/marmotedu/iam/pkg/log"
@@ -176,8 +177,16 @@ func (a *App) buildCommand() {
 	a.cmd = &cmd
 }
 
+func printWorkingDir() {
+	wd, _ := os.Getwd()
+	log.Infof("%v WorkingDir: %s", progressMessage, wd)
+}
+
 // runCommand does some initialization work and then calls the runFunc.
 func (a *App) runCommand(cmd *cobra.Command, args []string) error {
+	printWorkingDir()
+	cliflag.PrintFlags(cmd.Flags())
+
 	// if pass --version flag, print version information and exit
 	if !a.noVersion {
 		verflag.PrintAndExitIfRequested()
@@ -190,6 +199,16 @@ func (a *App) runCommand(cmd *cobra.Command, args []string) error {
 		// update viper config to options struct
 		if err := viper.Unmarshal(a.options); err != nil {
 			return err
+		}
+	}
+
+	if !a.silence {
+		log.Infof("%v Starting %s ...", progressMessage, a.name)
+		if !a.noVersion {
+			log.Infof("%v Version: `%s`", progressMessage, version.Get().ToJSON())
+		}
+		if !a.noConfig {
+			log.Infof("%v Config file used: `%s`", progressMessage, viper.ConfigFileUsed())
 		}
 	}
 
