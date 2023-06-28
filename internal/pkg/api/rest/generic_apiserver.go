@@ -7,7 +7,10 @@ package rest
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/marmotedu/component-base/pkg/core"
+	"github.com/marmotedu/component-base/pkg/version"
 	"github.com/marmotedu/iam/pkg/log"
+	"github.com/ngsin/iam-learning/internal/pkg/middleware"
 	"golang.org/x/sync/errgroup"
 	"net/http"
 )
@@ -19,18 +22,46 @@ type GenericAPIServer struct {
 	SecureServingInfo            *SecureServingInfo
 	InsecureServingInfo          *InsecureServingInfo
 	insecureServer, secureServer *http.Server
+	healthz                      bool
 }
 
 func (s *GenericAPIServer) Setup() {
-
+	// log route registration information when debug mode is enabled
+	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
+		log.Infof("%-6s %-s --> %s (%d handlers)", httpMethod, absolutePath, handlerName, nuHandlers)
+	}
 }
 
 func (s *GenericAPIServer) InstallMiddlewares() {
+	// necessary middlewares
+	s.Use(middleware.RequestID())
+	s.Use(middleware.Context())
 
+	// install custom middlewares
+	for _, m := range s.middlewares {
+		mw, ok := middleware.Middlewares[m]
+		if !ok {
+			log.Warnf("can not find middleware: %s", m)
+
+			continue
+		}
+
+		log.Infof("install middleware: %s", m)
+		s.Use(mw)
+	}
 }
 
 func (s *GenericAPIServer) InstallAPIs() {
+	// install healthz handler
+	if s.healthz {
+		s.GET("/healthz", func(c *gin.Context) {
+			core.WriteResponse(c, nil, map[string]string{"status": "ok"})
+		})
+	}
 
+	s.GET("/version", func(c *gin.Context) {
+		core.WriteResponse(c, nil, version.Get())
+	})
 }
 
 func initGenericAPIServer(s *GenericAPIServer) {

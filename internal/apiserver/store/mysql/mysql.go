@@ -5,6 +5,7 @@ import (
 	v1 "github.com/marmotedu/api/apiserver/v1"
 	"github.com/marmotedu/errors"
 	"github.com/ngsin/iam-learning/internal/apiserver/store"
+	"github.com/ngsin/iam-learning/internal/pkg/logger"
 	genericoptions "github.com/ngsin/iam-learning/internal/pkg/options"
 	"github.com/ngsin/iam-learning/pkg/db"
 	"gorm.io/gorm"
@@ -69,7 +70,7 @@ func GetMySQLFactoryOr(opts *genericoptions.MySQLOptions) (store.Factory, error)
 
 		// uncomment the following line if you need auto migration the given models
 		// not suggested in production environment.
-		migrateDatabase(dbIns)
+		//migrateDatabase(dbIns)
 
 		mysqlFactory = &datastore{dbIns}
 	})

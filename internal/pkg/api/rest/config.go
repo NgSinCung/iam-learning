@@ -15,12 +15,16 @@ type Config struct {
 	Mode            string
 	SecureServing   *SecureServingInfo
 	InsecureServing *InsecureServingInfo
+	Healthz         bool
+	Middlewares     []string
 }
 
 // NewConfig returns a Config struct with the default values.
 func NewConfig() *Config {
 	return &Config{
-		Mode: gin.ReleaseMode,
+		Healthz:     true,
+		Mode:        gin.ReleaseMode,
+		Middlewares: []string{},
 	}
 }
 
@@ -42,6 +46,8 @@ func (c CompletedConfig) NewServer() *GenericAPIServer {
 		Engine:              gin.New(),
 		SecureServingInfo:   c.SecureServing,
 		InsecureServingInfo: c.InsecureServing,
+		healthz:             c.Healthz,
+		middlewares:         c.Middlewares,
 	}
 	initGenericAPIServer(s)
 	return s
