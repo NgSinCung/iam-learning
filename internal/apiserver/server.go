@@ -5,14 +5,18 @@
 package apiserver
 
 import (
+	"github.com/marmotedu/iam/pkg/log"
 	"github.com/ngsin/iam-learning/internal/apiserver/config"
 	"github.com/ngsin/iam-learning/internal/apiserver/store"
 	"github.com/ngsin/iam-learning/internal/apiserver/store/mysql"
 	"github.com/ngsin/iam-learning/internal/pkg/api/rest"
 	genericoptions "github.com/ngsin/iam-learning/internal/pkg/options"
+	"github.com/ngsin/iam-learning/pkg/shutdown"
+	"github.com/ngsin/iam-learning/pkg/shutdown/shutdownmanagers/posixsignal"
 )
 
 type Server struct {
+	gs                *shutdown.GracefulShutdown
 	genericRESTServer *rest.GenericAPIServer
 	extraConfig       *ExtraConfig
 }
@@ -22,21 +26,50 @@ type PreparedServer struct {
 }
 
 func (s *PreparedServer) Run() error {
+
+	// start shutdown managers
+	if err := s.gs.Start(); err != nil {
+		log.Fatalf("start shutdown manager failed: %s", err.Error())
+	}
+
 	return s.genericRESTServer.Run()
 }
 
 func (s *Server) PrepareRun() *PreparedServer {
-	storeIns, _ := mysql.GetMySQLFactoryOr(s.extraConfig.mysqlOptions)
+
+	storeIns, err := mysql.GetMySQLFactoryOr(s.extraConfig.mysqlOptions)
+	if err != nil {
+		log.Fatalf("get mysql factory failed: %s", err.Error())
+		return nil
+	}
 	// storeIns, _ := etcd.GetEtcdFactoryOr(c.etcdOptions, nil)
 	store.SetClient(storeIns)
 
 	initRouter(s.genericRESTServer.Engine)
+
+	s.gs.AddShutdownCallback(shutdown.ShutdownFunc(func(string) error {
+		mysqlStore, _ := mysql.GetMySQLFactoryOr(nil)
+		if mysqlStore != nil {
+			_ = mysqlStore.Close()
+			log.Infof("shutdown callback: %s", "close mysql store")
+		}
+
+		// TODO: add grpc server graceful shutdown
+		//s.gRPCAPIServer.Close()
+		//s.genericAPIServer.Close()
+
+		return nil
+	}))
 
 	return &PreparedServer{s}
 
 }
 
 func createServer(genericConfig *config.Config) (*Server, error) {
+	// graceful shutdown
+	gs := shutdown.New()
+	gs.AddShutdownManager(posixsignal.NewPosixSignalManager())
+
 	genericRESTServerConfig, err := buildGenericRESTServerConfig(genericConfig)
 	if err != nil {
 		return nil, err
@@ -52,6 +85,7 @@ func createServer(genericConfig *config.Config) (*Server, error) {
 	extraConfig.complete()
 
 	server := &Server{
+		gs:                gs,
 		genericRESTServer: genericServer,
 		extraConfig:       extraConfig,
 		// TODO: add other server here. ex. grpc server
