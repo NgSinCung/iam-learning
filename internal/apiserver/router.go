@@ -20,9 +20,9 @@ import (
 	_ "github.com/ngsin/iam-learning/internal/pkg/validator"
 )
 
-func initRouter(g *gin.Engine) {
-	installMiddleware(g)
-	installController(g)
+func (s *Server) initRouter() {
+	installMiddleware(s.genericRESTServer.Engine)
+	installController(s.genericRESTServer.Engine)
 }
 
 func installMiddleware(g *gin.Engine) {

@@ -7,7 +7,6 @@ package apiserver
 import (
 	"github.com/marmotedu/iam/pkg/log"
 	"github.com/ngsin/iam-learning/internal/apiserver/config"
-	"github.com/ngsin/iam-learning/internal/apiserver/store"
 	"github.com/ngsin/iam-learning/internal/apiserver/store/mysql"
 	"github.com/ngsin/iam-learning/internal/pkg/api/rest"
 	genericoptions "github.com/ngsin/iam-learning/internal/pkg/options"
@@ -37,15 +36,9 @@ func (s *PreparedServer) Run() error {
 
 func (s *Server) PrepareRun() *PreparedServer {
 
-	storeIns, err := mysql.GetMySQLFactoryOr(s.extraConfig.mysqlOptions)
-	if err != nil {
-		log.Fatalf("get mysql factory failed: %s", err.Error())
-		return nil
-	}
-	// storeIns, _ := etcd.GetEtcdFactoryOr(c.etcdOptions, nil)
-	store.SetClient(storeIns)
+	s.initRouter()
 
-	initRouter(s.genericRESTServer.Engine)
+	s.initStore()
 
 	s.gs.AddShutdownCallback(shutdown.ShutdownFunc(func(string) error {
 		mysqlStore, _ := mysql.GetMySQLFactoryOr(nil)
